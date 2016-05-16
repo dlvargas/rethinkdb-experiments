@@ -1,0 +1,25 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+
+group = 'org.lockss.laaws'
+version = '1.0'
+
+description = """laaws-rethinkdb"""
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile group: 'com.rethinkdb', name: 'rethinkdb-driver', version: '2.3.0'
+    compile group: 'org.jwat', name: 'jwat-warc', version: '1.0.4'
+    compile group: 'org.apache.hadoop', 'name': 'hadoop-core', version: '0.20.2'
+    compile group: 'org.netpreserve.commons', name: 'webarchive-commons', version: '1.1.6'
+    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.21'
+    compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.21'
+
+}
