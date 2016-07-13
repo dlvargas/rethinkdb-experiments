@@ -32,20 +32,64 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.lockss.laaws.indexdb.tools;
 
+import org.apache.http.HttpResponse;
+import org.jwat.common.ByteCountingPushBackInputStream;
+import org.jwat.common.HeaderLine;
+import org.jwat.common.HttpHeader;
+import org.jwat.warc.WarcConstants;
+import org.jwat.warc.WarcReader;
 import org.jwat.warc.WarcReaderFactory;
+import org.jwat.warc.WarcRecord;
+
+import java.io.*;
 
 public class InsertAuidHeader {
     // For expedience we use static variables for now
-    private static String warc_in  = "/home/daniel/ia-test.warc";
-    private static String warc_out = "/home/daniel/ia-test.new.warc";
+    private static String warc_in  = "/Users/daniel/warc/iah-urls-wget.warc";
+    private static String warc_out = "/Users/daniel/warc/iah-urls-wget.warc";
     private static String auid     = "org.lockss.test:gibberish";
 
-    public InsertAuidHeader(String in, String out, String auid) {
-        //WarcReaderFactory.getReader(z);
+    public InsertAuidHeader(String in, String out, String auid) throws IOException {
+        InputStream wf = new BufferedInputStream(new FileInputStream(warc_in));
+        WarcReader wr = WarcReaderFactory.getReader(wf);
+
+        WarcRecord wrec;
+        while ((wrec = wr.getNextRecord()) != null) {
+            System.out.println("\nWARC Record Headers:\n[");
+            for (HeaderLine warcHeader : wrec.getHeaderList()) {
+                System.out.println(warcHeader.name + ": " + warcHeader.value);
+            }
+            System.out.println("]");
+
+            if (wrec.getHeader(WarcConstants.FN_WARC_TYPE).value.equals(WarcConstants.RT_RESPONSE)) {
+                System.out.println("\nHTTP Headers:\n[");
+                HttpHeader httpHeader = wrec.getHttpHeader();
+                for (HeaderLine httpHeaderLine: httpHeader.getHeaderList()) {
+                    System.out.println(httpHeaderLine.name + ": " + httpHeaderLine.value);
+                }
+                System.out.println("]");
+
+                InputStream testIS = wrec.getPayload().getInputStreamComplete();
+                BufferedReader test = new BufferedReader(new InputStreamReader(testIS));
+                System.out.println("\nWARC Record Payload (complete):\n[");
+                String line;
+                while ((line = test.readLine()) != null) {
+                    System.out.println(line);
+                }
+                System.out.println("]");
+
+            }
+
+            System.out.println("--------");
+        }
     }
 
     public static void main(String[] args) {
-        InsertAuidHeader injector = new InsertAuidHeader(warc_in, warc_out, auid);
+        try {
+            InsertAuidHeader injector = new InsertAuidHeader(warc_in, warc_out, auid);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         //WarcWriterFactory.getWriterUncompressed();
     }
