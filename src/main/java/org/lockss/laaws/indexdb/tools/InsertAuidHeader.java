@@ -41,7 +41,7 @@ public class InsertAuidHeader {
     private static String auid     = "org.lockss.test:gibberish";
 
     public InsertAuidHeader(String in, String out, String auid) {
-        WarcReaderFactory.getReader(z)
+        //WarcReaderFactory.getReader(z);
     }
 
     public static void main(String[] args) {
